@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Papa de Noël – Les cadeaux de Papajoue</title>
+<meta name="description" content="Papa de Noël : Papajoue offre des jeux Steam à ses viewers. Choisis ton cadeau avec tes flocons ❄️">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Papa de Noël – Les cadeaux de Papajoue">
+<meta property="og:description" content="Des jeux Steam offerts pour Noël aux viewers de Papajoue. Viens choisir ton cadeau 🎄">
+<meta property="og:image" content="https://lapapacorp.github.io/noel/img/logo_complet.png">
+<meta property="og:url" content="https://lapapacorp.github.io/noel/">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --bg: #3a1016;
+    --bg-deep: #1a070b;
+    --panel: #2b1015;
+    --panel-2: #5a1c24;
+    --line: #6a2a33;
+    --text: #f5e6e2;
+    --muted: #d1a9a4;
+    --accent: #ffd36a;
+    --accent-2: #ffb703;
+    --deal-bg: #1f6b35;
+    --deal-fg: #b9f5a3;
+    --good: #ffd36a;
+    --mid: #f0c541;
+    --bad: #ff8a7a;
+    --panel-w: 480px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: 16px; }
+  body {
+    margin: 0;
+    color: var(--text);
+    font-family: "Motiva Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background:
+      radial-gradient(1200px 500px at 70% -10%, rgba(255,80,80,.26), transparent 60%),
+      radial-gradient(900px 420px at 5% 0%, rgba(255,211,106,.10), transparent 60%),
+      linear-gradient(180deg, #4a1219 0%, var(--bg) 320px, var(--bg-deep) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  main { padding: 0 28px 60px; transition: padding-right .25s ease; max-width: 1700px; margin: 0 auto; }
+  @media (min-width: 1000px) { body.panel-open main { padding-right: calc(var(--panel-w) + 28px); } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  /* ---------- En-tête ---------- */
+  header.top { display: flex; align-items: center; gap: 22px; padding: 30px 0 18px; flex-wrap: wrap; }
+  .logo { height: 84px; width: auto; }
+  .logo[hidden] { display: none; }
+  .titles h1 { margin: 0; font-size: clamp(26px, 3.6vw, 40px); font-weight: 800; letter-spacing: -.02em; color: #fff; }
+  .titles p { margin: 6px 0 0; color: var(--muted); font-size: 16px; max-width: 60ch; line-height: 1.45; }
+  .badges { margin-left: auto; display: flex; gap: 12px; }
+  .badges img { height: 64px; width: auto; }
+
+  /* ---------- Barre d'outils ---------- */
+  .toolbar {
+    position: sticky; top: 0; z-index: 5;
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+    padding: 12px 14px; margin-bottom: 22px;
+    background: rgba(26,8,12,.88); backdrop-filter: blur(8px);
+    border: 1px solid var(--line); border-radius: 4px;
+  }
+  .toolbar input[type=search], .toolbar select {
+    background: #1a0a0d; color: var(--text); border: 1px solid var(--line);
+    border-radius: 3px; padding: 9px 12px; font: inherit; min-width: 0;
+  }
+  .toolbar input[type=search] { flex: 1 1 220px; }
+  .toolbar label.chk { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); cursor: pointer; }
+  .count { margin-left: auto; color: var(--muted); font-size: 14px; }
+
+  /* ---------- Connexion Twitch ---------- */
+  .auth { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .auth .twitch-btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 3px;
+    border: 0; background: #9146FF; color: #fff; font-weight: 700; font-size: 14px;
+    text-decoration: none; cursor: pointer;
+  }
+  .auth .twitch-btn:hover { background: #7c2df0; }
+  .auth .user { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text); }
+  .auth .user b { color: #fff; }
+  .auth .credits-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 8px; border-radius: 14px; background: rgba(255,211,106,.18); color: var(--accent); font-weight: 700; font-size: 13px; white-space: nowrap; }
+  .auth .credits-pill .paw-icon { height: 20px; width: 20px; object-fit: contain; vertical-align: middle; flex-shrink: 0; }
+  .auth .logout { background: none; border: 0; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: 13px; padding: 0; }
+  .auth .logout:hover { color: var(--text); }
+  .reserve-btn { border: 0; cursor: pointer; font-size: 15px; padding: 12px 20px; }
+  .reserve-btn:disabled { opacity: .6; cursor: default; }
+
+  /* ---------- Grille ---------- */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 22px; }
+  .card {
+    position: relative; display: block; width: 100%; padding: 0; border: 0; cursor: pointer;
+    aspect-ratio: 2 / 3; border-radius: 4px; overflow: hidden; background: var(--panel);
+    box-shadow: 0 4px 18px rgba(0,0,0,.45);
+    transition: transform 180ms cubic-bezier(0.23,1,0.32,1), box-shadow .18s ease;
+    text-align: left; transform-style: preserve-3d; will-change: transform;
+  }
+  .card img.cover { width: 100%; height: 100%; object-fit: cover; display: block; transition: filter .25s ease; }
+  .card:hover, .card:focus-visible, .card.active { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,.6), 0 0 0 2px var(--accent); }
+  .card.active { box-shadow: 0 10px 28px rgba(0,0,0,.6), 0 0 0 3px var(--accent-2); }
+
+  .hover-info {
+    position: absolute; inset: auto 0 0 0; padding: 60px 14px 14px;
+    background: linear-gradient(180deg, transparent, rgba(20,6,10,.92) 45%);
+    transform: translateY(101%); transition: transform .22s ease;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .card:hover .hover-info, .card:focus-visible .hover-info, .card.active .hover-info { transform: translateY(0); }
+  @media (hover: none) { .hover-info { transform: translateY(0); padding-top: 36px; } .hover-info .genres { display: none; } }
+  .hover-info .name { font-size: 17px; font-weight: 700; color: #fff; line-height: 1.2; }
+  .hover-info .genres { font-size: 12.5px; color: var(--muted); }
+  .hover-info .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  .card.reserved img.cover { filter: grayscale(1) brightness(.5); }
+  .ribbon {
+    position: absolute; top: 12px; left: -1px; padding: 6px 12px 6px 10px;
+    background: #1f7a3d; color: #fff; font-weight: 700; font-size: 13px;
+    border-radius: 0 3px 3px 0; box-shadow: 0 2px 8px rgba(0,0,0,.5);
+    max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* ---------- Prix, notes ---------- */
+  .price { display: inline-flex; align-items: stretch; background: #000; border-radius: 3px; overflow: hidden; font-size: 14px; }
+  .price .disc { background: var(--deal-bg); color: var(--deal-fg); padding: 4px 7px; font-weight: 800; }
+  .price .old { color: #738895; text-decoration: line-through; padding: 4px 7px 4px 8px; font-size: 12px; align-self: center; }
+  .price .now { padding: 4px 9px; color: #fff; }
+  .price.free .now { color: var(--deal-fg); font-weight: 700; }
+  .rating { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+  .rating svg { width: 15px; height: 15px; fill: var(--good); }
+  .rating.mid svg { fill: var(--mid); } .rating.bad svg { fill: var(--bad); }
+  .meta { font-size: 12px; font-weight: 800; padding: 3px 6px; border-radius: 3px; color: #000; background: #6c3; }
+  .meta.mid { background: #fc3; } .meta.bad { background: #f00; color: #fff; }
+
+  /* ---------- Panneau latéral ---------- */
+  aside.panel {
+    position: fixed; top: 0; right: 0; bottom: 0; width: min(var(--panel-w), 100vw); z-index: 20;
+    background: linear-gradient(180deg, #4a1820, var(--panel) 260px);
+    border-left: 1px solid var(--line); box-shadow: -12px 0 40px rgba(0,0,0,.5);
+    transform: translateX(102%); transition: transform .28s cubic-bezier(.2,.8,.2,1);
+    overflow-y: auto; overscroll-behavior: contain;
+  }
+  body.panel-open aside.panel { transform: translateX(0); }
+  .panel .close {
+    position: absolute; top: 12px; right: 12px; width: 38px; height: 38px; border-radius: 50%;
+    border: 0; background: rgba(0,0,0,.6); color: #fff; font-size: 22px; cursor: pointer; line-height: 1;
+  }
+  .panel .close:hover { background: #000; }
+  .panel .banner { width: 100%; display: block; aspect-ratio: 460 / 215; object-fit: cover; background: #1a0a0d; }
+  .panel .trailer { position: relative; display: block; width: 100%; padding: 0; border: 0; cursor: pointer; aspect-ratio: 460 / 215; background: #1a0a0d center / cover no-repeat; }
+  .panel .trailer .play { position: absolute; inset: 0; margin: auto; width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; color: #fff; background: rgba(16,24,34,.72); border: 2px solid rgba(255,255,255,.85); transition: transform .15s ease, background .15s ease; }
+  .panel .trailer:hover .play { transform: scale(1.08); background: rgba(255,211,106,.85); }
+  .panel video.trailer-video { width: 100%; display: block; aspect-ratio: 460 / 215; background: #000; }
+  .panel .yt-link { display: inline-block; margin: 10px 24px 0; font-size: 13.5px; color: var(--muted); }
+  .panel .yt-link:hover { color: var(--accent); }
+  .panel .body { padding: 20px 24px 40px; }
+  .panel h2 { margin: 0 0 12px; font-size: 26px; color: #fff; line-height: 1.15; letter-spacing: -.01em; }
+  .panel .line { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .panel dl { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; margin: 16px 0; font-size: 14px; }
+  .panel dt { color: var(--muted); } .panel dd { margin: 0; }
+  .panel .short { font-size: 16px; line-height: 1.5; color: #fbeeea; margin: 0 0 16px; }
+  .panel .desc { font-size: 14.5px; line-height: 1.6; color: var(--text); max-width: 68ch; }
+  .panel .desc h2, .panel .desc h3, .panel .desc h4 { font-size: 16px; color: #fff; margin: 18px 0 6px; }
+  .panel .desc ul { padding-left: 20px; }
+  .panel .status { margin: 0 0 16px; padding: 10px 12px; border-radius: 3px; background: rgba(201,72,60,.18); border: 1px solid #c9483c; color: #fff; }
+  .btn {
+    display: inline-block; padding: 10px 18px; border-radius: 3px; text-decoration: none; font-weight: 600;
+    background: linear-gradient(90deg, #c4161c, #ef4b3a); color: #fff;
+  }
+  .btn:hover { filter: brightness(1.12); }
+
+  .empty { padding: 60px 0; text-align: center; color: var(--muted); grid-column: 1 / -1; }
+  footer { margin-top: 40px; color: var(--muted); font-size: 13px; text-align: center; }
+  footer .thanks { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; }
+  footer .thanks-logo { height: 22px; width: 22px; border-radius: 50%; }
+  footer .thanks-photo {
+    height: 46px; width: 46px; object-fit: cover; object-position: 50% 22%;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }
+
+  /* ---------- Bannière d'appel au don ---------- */
+  .cta {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 22px; padding: 14px 18px;
+    background: linear-gradient(90deg, rgba(255,211,106,.14), rgba(60,190,100,.10));
+    border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 4px;
+  }
+  .cta-paw { height: 34px; width: 34px; flex-shrink: 0; }
+  .cta p { margin: 0; font-size: 15.5px; color: var(--text); }
+  .cta a { color: var(--deal-fg); font-weight: 700; text-decoration: underline; }
+  .cta a:hover { color: #fff; }
+
+  /* ---------- Décor de Noël ---------- */
+  main, .garland { position: relative; z-index: 1; }
+  #snow { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  .garland {
+    height: 28px;
+    background-image:
+      radial-gradient(circle at 12px 16px, #ff3b3b 5px, transparent 6px),
+      radial-gradient(circle at 24px 20px, #ffd36a 5px, transparent 6px),
+      radial-gradient(circle at 36px 16px, #3ddc84 5px, transparent 6px),
+      linear-gradient(#1f7a3d, #1f7a3d);
+    background-size: 48px 28px, 48px 28px, 48px 28px, 100% 3px;
+    background-position: 0 0, 0 0, 0 0, 0 6px;
+    background-repeat: repeat-x;
+    animation: bulbs 2.2s ease-in-out infinite alternate;
+  }
+  @keyframes bulbs { from { filter: brightness(.7); } to { filter: brightness(1.25); } }
+  header.top { position: relative; }
+  .titles h1 { text-shadow: 0 2px 14px rgba(255,70,70,.45); }
+  .titles h1 .deco { font-size: .8em; }
+  .star { position: absolute; color: var(--accent); pointer-events: none; animation: twinkle 2.8s ease-in-out infinite alternate; }
+  .star.s1 { top: 14px; left: 36%; font-size: 18px; animation-delay: .2s; }
+  .star.s2 { top: 52px; left: 62%; font-size: 12px; animation-delay: 1s; }
+  .star.s3 { top: 24px; right: 14%; font-size: 22px; animation-delay: .6s; }
+  .star.s4 { bottom: 8px; left: 48%; font-size: 14px; animation-delay: 1.6s; }
+  @keyframes twinkle { from { opacity: .25; transform: scale(.8); } to { opacity: 1; transform: scale(1.15); } }
+  @media (prefers-reduced-motion: reduce) { .garland, .star { animation: none !important; } }
+  .cta-icon { font-size: 30px; line-height: 1; flex-shrink: 0; }
+  .copies { position: absolute; top: 12px; right: 10px; padding: 4px 9px; border-radius: 12px; background: rgba(26,8,12,.82); border: 1px solid var(--accent); color: var(--accent); font-size: 12.5px; font-weight: 800; }
+  .panel .status.ok { background: rgba(60,190,100,.14); border-color: #3dbe64; }
+  .panel ul.resv { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 6px; }
+  .panel ul.resv li { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 3px; background: rgba(0,0,0,.28); }
+  .panel ul.resv .adm-btn { margin-left: auto; border: 1px solid var(--accent); background: none; color: var(--accent); border-radius: 3px; padding: 4px 10px; cursor: pointer; font-size: 13px; }
+  .panel ul.resv .adm-btn:hover { background: var(--accent); color: #000; }
+</style>
+</head>
+<body>
+<canvas id="snow" aria-hidden="true"></canvas>
+<div class="garland" aria-hidden="true"></div>
+<main>
+  <header class="top">
+    <img class="logo" src="img/logo_complet.png" alt="Papajoue" onerror="this.hidden=true">
+    <div class="titles">
+      <h1><span class="deco">🦌</span> Papa de Noël <span class="deco">🎄</span></h1>
+      <p>Les cadeaux de Papajoue : choisis ton jeu Steam avec tes flocons ❄️. Survole une jaquette pour un aperçu, clique dessus pour les détails.</p>
+    </div>
+    <span class="star s1" aria-hidden="true">✦</span><span class="star s2" aria-hidden="true">★</span><span class="star s3" aria-hidden="true">✦</span><span class="star s4" aria-hidden="true">★</span>
+    <div class="badges">
+      <img src="img/badge1.png" alt="" onerror="this.remove()">
+      <img src="img/badge2.png" alt="" onerror="this.remove()">
+    </div>
+  </header>
+
+  <div class="cta">
+    <span class="cta-icon" aria-hidden="true">❄️</span>
+    <p>Gagne des flocons en participant au live sur
+      <a href="https://twitch.tv/papajoue" target="_blank" rel="noopener">twitch.tv/papajoue</a></p>
+  </div>
+
+  <div class="toolbar" role="search">
+    <input type="search" id="q" list="genreList" placeholder="Rechercher un jeu ou un genre" aria-label="Rechercher un jeu ou un genre">
+    <datalist id="genreList"></datalist>
+    <select id="sort" aria-label="Trier les jeux">
+      <option value="list">Ordre de la liste</option>
+      <option value="name">Nom (A à Z)</option>
+      <option value="priceAsc">Prix croissant</option>
+      <option value="priceDesc">Prix décroissant</option>
+      <option value="rating">Mieux notés</option>
+    </select>
+    <label class="chk"><input type="checkbox" id="onlyFree"> Encore disponibles seulement</label>
+    <span class="count" id="count" aria-live="polite"></span>
+    <div class="auth" id="auth"></div>
+  </div>
+
+  <section class="grid" id="grid" aria-label="Liste des jeux"></section>
+  <footer>
+    <p id="foot"></p>
+    <p class="thanks">
+      <img src="img/photo-papajoue.jpg" alt="Papajoue" class="thanks-photo">
+      <img src="img/logo.png" alt="" class="thanks-logo">
+      Joyeux Noël 🎄 Merci d'être là en live 💜
+    </p>
+    <p style="margin-top:14px;font-size:12.5px;">
+      <a href="mentions-legales.html">Mentions légales</a> · <a href="politique-confidentialite.html">Politique de confidentialité</a>
+    </p>
+    <p style="margin-top:6px;font-size:12px;">© 2026 Papajoue — Site réalisé avec l'aide de Claude (IA).</p>
+  </footer>
+</main>
+
+<aside class="panel" id="panel" aria-hidden="true" aria-label="Détails du jeu">
+  <button class="close" id="close" aria-label="Fermer">×</button>
+  <div id="panelContent"></div>
+</aside>
+
+<script>
+(() => {
+  // ---- Configuration (valeurs publiques, sans risque à laisser en clair) ----
+  const SUPABASE_URL = 'https://ednbryhwbgnuwxhbhuzv.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkbmJyeWh3YmdudXd4aGJodXp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDU0MzIsImV4cCI6MjEwNjAyMTQzMn0.BkOp7jsfQ1N441zNYi6DXlQkFzet5gBJmZK48HOnd8c';
+  const TWITCH_CLIENT_ID = 'w3n4sn7ysuokibqwo1tvlynr61tk8e';
+  const TWITCH_REDIRECT_URI = 'https://lapapacorp.github.io/noel/';
+
+  const $ = (s) => document.querySelector(s);
+  const grid = $('#grid'), panel = $('#panel'), panelContent = $('#panelContent');
+  let games = [], reservations = {}, activeId = null, lastFocus = null;
+  let currentUser = null, credits = 0;
+
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmt = new Intl.NumberFormat('fr-FR');
+  const THUMB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 21h4V9H2v12zm20-11c0-1.1-.9-2-2-2h-6.3l1-4.6v-.3c0-.4-.2-.8-.4-1.1L13.2 1 6.6 7.6C6.2 8 6 8.5 6 9v10c0 1.1.9 2 2 2h9c.8 0 1.5-.5 1.8-1.2l3-7c.1-.2.2-.5.2-.8v-2z"/></svg>';
+
+  const tone = (n, good, mid) => (n >= good ? '' : n >= mid ? 'mid' : 'bad');
+
+  function priceHTML(p) {
+    if (!p) return '';
+    if (p.free) return '<span class="price free"><span class="now">Gratuit</span></span>';
+    if (!p.final) return '<span class="price"><span class="now">Prix indisponible</span></span>';
+    return '<span class="price">' +
+      (p.discount ? `<span class="disc">-${p.discount}%</span>` : '') +
+      (p.initial ? `<span class="old">${esc(p.initial)}</span>` : '') +
+      `<span class="now">${esc(p.final)}</span></span>`;
+  }
+  function ratingHTML(g, long) {
+    const r = g.reviews; if (!r) return '';
+    const label = long ? `${r.percent} % ${esc(r.label || 'positives')} (${fmt.format(r.total)} avis)` : `${r.percent} %`;
+    return `<span class="rating ${tone(r.percent, 70, 40)}" title="${esc(r.label || '')}">${THUMB}${label}</span>`;
+  }
+  function metaHTML(g) {
+    return g.metacritic != null ? `<span class="meta ${tone(g.metacritic, 75, 50)}" title="Metacritic">${g.metacritic}</span>` : '';
+  }
+
+  // Nettoie le HTML de la description Steam (garde uniquement le texte mis en forme)
+  function clean(html) {
+    const doc = new DOMParser().parseFromString(html || '', 'text/html');
+    const ok = new Set(['P','BR','B','STRONG','I','EM','U','UL','OL','LI','H2','H3','H4']);
+    const drop = new Set(['SCRIPT','STYLE','IMG','IFRAME','VIDEO','OBJECT','EMBED','LINK','META']);
+    (function walk(node) {
+      [...node.childNodes].forEach((ch) => {
+        if (ch.nodeType === 8) { ch.remove(); return; }
+        if (ch.nodeType !== 1) return;
+        if (drop.has(ch.tagName)) { ch.remove(); return; }
+        walk(ch);
+        if (ok.has(ch.tagName)) [...ch.attributes].forEach((a) => ch.removeAttribute(a.name));
+        else ch.replaceWith(...ch.childNodes);
+      });
+    })(doc.body);
+    return doc.body.innerHTML;
+  }
+
+  const priceValue = (g) => g.price?.free ? 0 : (parseFloat((g.price?.final || '').replace(/[^\d,]/g, '').replace(',', '.')) || Infinity);
+
+  const isAdmin = () => currentUser === 'papajoue';
+  // reservations[appid] = [{ by, sent }, ...] : une entrée par clé réservée
+  const resOf = (g) => reservations[g.appid] || [];
+  const nCopies = (g) => g.copies || 1;
+  const freeCopies = (g) => Math.max(0, nCopies(g) - resOf(g).length);
+  const allSent = (g) => resOf(g).length > 0 && resOf(g).length >= nCopies(g) && resOf(g).every((r) => r.sent);
+  const shownGames = () => games.filter((g) => isAdmin() || !allSent(g));
+
+  function visibleGames() {
+    const q = $('#q').value.trim().toLowerCase();
+    let list = shownGames().filter((g) => !q || g.name.toLowerCase().includes(q) || (g.genres || []).some((x) => x.toLowerCase().includes(q)));
+    if ($('#onlyFree').checked) list = list.filter((g) => freeCopies(g) > 0);
+    const s = $('#sort').value;
+    const by = {
+      name: (a, b) => a.name.localeCompare(b.name, 'fr'),
+      priceAsc: (a, b) => priceValue(a) - priceValue(b),
+      priceDesc: (a, b) => (priceValue(b) === Infinity ? -1 : priceValue(b)) - (priceValue(a) === Infinity ? -1 : priceValue(a)),
+      rating: (a, b) => (b.reviews?.percent ?? -1) - (a.reviews?.percent ?? -1),
+    };
+    if (by[s]) list = [...list].sort(by[s]);
+    return list;
+  }
+
+  function render() {
+    const list = visibleGames();
+    const pool = shownGames();
+    const free = pool.filter((g) => freeCopies(g) > 0).length;
+    $('#count').textContent = `${pool.length} jeux, ${free} encore disponibles`;
+    if (!list.length) { grid.innerHTML = '<p class="empty">Aucun jeu ne correspond à ta recherche.</p>'; return; }
+    grid.innerHTML = list.map((g) => {
+      const n = nCopies(g), free = freeCopies(g), taken = resOf(g);
+      let ribbon = '';
+      if (allSent(g)) ribbon = '<span class="ribbon">Envoyé</span>';
+      else if (free === 0) ribbon = n > 1 ? '<span class="ribbon">Plus de clé</span>' : `<span class="ribbon">Réservé par ${esc(taken[0]?.by)}</span>`;
+      return `<button class="card ${free === 0 ? 'reserved' : ''} ${g.appid === activeId ? 'active' : ''}" data-id="${g.appid}" aria-label="${esc(g.name)}${free === 0 ? ', plus disponible' : ''}">
+        <img class="cover" loading="lazy" src="${esc(g.image)}" alt="Jaquette de ${esc(g.name)}" data-fallback="${esc(g.header)}">
+        ${ribbon}
+        ${n > 1 && free > 0 ? `<span class="copies" title="Clés restantes">🎁 ${free}/${n}</span>` : ''}
+        <span class="hover-info">
+          <span class="name">${esc(g.name)}</span>
+          <span class="row">${priceHTML(g.price)}${metaHTML(g)}</span>
+          <span class="row">${ratingHTML(g, false)}</span>
+          <span class="genres">${esc((g.genres || []).slice(0, 3).join(', '))}</span>
+        </span>
+      </button>`;
+    }).join('');
+  }
+
+  // Si la jaquette verticale n'existe pas, on retombe sur l'image d'en-tête
+  grid.addEventListener('error', (e) => {
+    const img = e.target;
+    if (img.tagName === 'IMG' && img.dataset.fallback && img.src !== img.dataset.fallback) img.src = img.dataset.fallback;
+  }, true);
+
+  // Trailer : miniature Steam avec bouton lecture (la vidéo ne se charge qu'au clic) + lien YouTube
+  function bannerHTML(g) {
+    const t = g.trailer, src = t && (t.mp4 || t.webm);
+    const https = (u) => String(u || '').replace(/^http:/, 'https:');
+    const media = src
+      ? `<button class="trailer" id="trailerBtn" type="button" aria-label="Lancer le trailer de ${esc(g.name)}" style="background-image:url('${esc(https(t.thumbnail || g.header))}')"><span class="play">▶</span></button>`
+      : `<img class="banner" src="${esc(g.header)}" alt="">`;
+    const yt = `https://www.youtube.com/results?search_query=${encodeURIComponent(g.name + ' trailer')}`;
+    return media + `<a class="yt-link" href="${yt}" target="_blank" rel="noopener">▶ Voir le trailer sur YouTube</a>`;
+  }
+  function bindTrailer(g) {
+    const btn = $('#trailerBtn'); if (!btn) return;
+    btn.addEventListener('click', () => {
+      const t = g.trailer, https = (u) => String(u || '').replace(/^http:/, 'https:');
+      const v = document.createElement('video');
+      v.className = 'trailer-video'; v.controls = true; v.autoplay = true; v.playsInline = true;
+      v.poster = https(t.thumbnail || g.header);
+      if (t.mp4) { const s = document.createElement('source'); s.src = https(t.mp4); s.type = 'video/mp4'; v.appendChild(s); }
+      if (t.webm) { const s = document.createElement('source'); s.src = https(t.webm); s.type = 'video/webm'; v.appendChild(s); }
+      btn.replaceWith(v);
+    });
+  }
+
+  function openPanel(id) {
+    const g = games.find((x) => x.appid === id); if (!g) return;
+    activeId = id; lastFocus = document.activeElement;
+    panelContent.innerHTML = `
+      ${bannerHTML(g)}
+      <div class="body">
+        <h2>${esc(g.name)}</h2>
+        ${reservationsHTML(g)}
+        <div class="line">${priceHTML(g.price)}${metaHTML(g)}${ratingHTML(g, true)}</div>
+        ${g.short ? `<p class="short">${esc(g.short)}</p>` : ''}
+        <dl>
+          ${g.genres?.length ? `<dt>Genres</dt><dd>${esc(g.genres.join(', '))}</dd>` : ''}
+          ${g.release ? `<dt>Sortie</dt><dd>${esc(g.release)}</dd>` : ''}
+          ${g.developers?.length ? `<dt>Développeur</dt><dd>${esc(g.developers.join(', '))}</dd>` : ''}
+          ${g.metacritic != null ? `<dt>Metacritic</dt><dd>${g.metacritic} / 100</dd>` : ''}
+        </dl>
+        <div class="desc">${clean(g.about)}</div>
+        <p><a class="btn" href="${esc(g.url)}" target="_blank" rel="noopener">Voir sur Steam</a></p>
+      </div>`;
+    panel.scrollTop = 0;
+    document.body.classList.add('panel-open');
+    panel.setAttribute('aria-hidden', 'false');
+    document.querySelectorAll('.card').forEach((c) => c.classList.toggle('active', Number(c.dataset.id) === id));
+    panelContent.querySelectorAll('.adm-btn').forEach((b) => b.addEventListener('click', () => markSent(id, b.dataset.login, b.dataset.undo === '1')));
+    const rb = $('#reserveBtn');
+    if (rb) rb.addEventListener('click', () => reserveGame(g.appid));
+    bindTrailer(g);
+    $('#close').focus({ preventScroll: true });
+  }
+  function closePanel() {
+    panelContent.querySelectorAll('video').forEach((v) => v.pause());
+    activeId = null;
+    document.body.classList.remove('panel-open');
+    panel.setAttribute('aria-hidden', 'true');
+    document.querySelectorAll('.card.active').forEach((c) => c.classList.remove('active'));
+    lastFocus?.focus?.({ preventScroll: true });
+  }
+
+  grid.addEventListener('click', (e) => {
+    const card = e.target.closest('.card'); if (!card) return;
+    const id = Number(card.dataset.id);
+    activeId === id ? closePanel() : openPanel(id);
+  });
+
+  // ---------- Tilt 3D au survol (souris fine uniquement, respecte prefers-reduced-motion) ----------
+  const canTilt = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (canTilt) {
+    let tiltCard = null;
+    const resetTilt = () => { if (tiltCard) { tiltCard.style.transform = ''; tiltCard = null; } };
+    grid.addEventListener('mousemove', (e) => {
+      const card = e.target.closest('.card');
+      if (!card) { resetTilt(); return; }
+      if (card !== tiltCard) { resetTilt(); tiltCard = card; }
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;   // 0 (gauche) → 1 (droite)
+      const py = (e.clientY - r.top) / r.height;   // 0 (haut) → 1 (bas)
+      const rotY = (px - 0.5) * 10;  // gauche s'enfonce en négatif, droite en positif
+      const rotX = (0.5 - py) * 8;   // haut/bas pareil
+      card.style.transform = `perspective(900px) translateY(-4px) scale(1.02) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    });
+    grid.addEventListener('mouseleave', resetTilt);
+  }
+  $('#close').addEventListener('click', closePanel);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && activeId) closePanel(); });
+  ['#q', '#sort', '#onlyFree'].forEach((s) => $(s).addEventListener('input', render));
+
+  // ---------- Connexion Twitch (OAuth implicite, tout se passe dans le navigateur) ----------
+  function twitchLoginUrl() {
+    const p = new URLSearchParams({
+      client_id: TWITCH_CLIENT_ID, redirect_uri: TWITCH_REDIRECT_URI,
+      response_type: 'token', scope: '', force_verify: 'true',
+    });
+    return `https://id.twitch.tv/oauth2/authorize?${p}`;
+  }
+
+  function renderAuth() {
+    const el = $('#auth');
+    if (currentUser) {
+      el.innerHTML = `<span class="user">Connecté : <b>${esc(currentUser)}</b>
+        <span class="credits-pill">❄️ ${credits} flocon${credits > 1 ? 's' : ''} restant${credits > 1 ? 's' : ''}</span></span>
+        <button class="logout" id="logoutBtn" type="button">Se déconnecter</button>`;
+      $('#logoutBtn').addEventListener('click', logout);
+    } else {
+      el.innerHTML = `<a class="twitch-btn" href="${twitchLoginUrl()}">Se connecter avec Twitch</a>`;
+    }
+  }
+  function logout() {
+    currentUser = null; credits = 0;
+    localStorage.removeItem('twitchLogin');
+    renderAuth(); render();
+    if (activeId != null) openPanel(activeId);
+  }
+
+  // Après le retour de Twitch, le pseudo est dans #access_token=... (fragment d'URL)
+  async function handleTwitchRedirect() {
+    const hash = new URLSearchParams(location.hash.slice(1));
+    const token = hash.get('access_token');
+    if (!token) return;
+    history.replaceState(null, '', location.pathname + location.search);
+    try {
+      const res = await fetch('https://api.twitch.tv/helix/users', {
+        headers: { Authorization: `Bearer ${token}`, 'Client-Id': TWITCH_CLIENT_ID },
+      });
+      const data = await res.json();
+      const login = data.data?.[0]?.login;
+      if (login) { currentUser = login; localStorage.setItem('twitchLogin', login); }
+    } catch { /* connexion Twitch impossible, on laisse le viewer réessayer */ }
+  }
+
+  // ---------- Lecture Supabase (crédits, réservations) ----------
+  async function fetchCredits(login) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/credits_noel?twitch_login=eq.${encodeURIComponent(login)}&select=credits`,
+        { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
+      const rows = await res.json();
+      credits = rows[0]?.credits ?? 0;
+    } catch { credits = 0; }
+  }
+  async function loadReservations() {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/reservations_noel?select=appid,reserved_by,sent&order=reserved_at`,
+        { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
+      const rows = await res.json();
+      reservations = {};
+      if (Array.isArray(rows)) rows.forEach((r) => { (reservations[r.appid] ||= []).push({ by: r.reserved_by, sent: !!r.sent }); });
+    } catch { reservations = {}; }
+  }
+
+  // ---------- Admin : marquer une clé comme envoyée (code secret vérifié côté Supabase) ----------
+  async function markSent(appid, login, undo) {
+    let code = sessionStorage.getItem('adminCode');
+    if (!code) { code = prompt('Code admin :'); if (!code) return; }
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/mark_sent_noel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+        body: JSON.stringify({ p_appid: appid, p_login: login, p_code: code, p_undo: undo }),
+      });
+      const result = await res.json();
+      if (result === 'ok') {
+        sessionStorage.setItem('adminCode', code);
+        const r = (reservations[appid] || []).find((x) => x.by === login);
+        if (r) r.sent = !undo;
+        render(); openPanel(appid);
+      } else {
+        sessionStorage.removeItem('adminCode');
+        alert(result === 'forbidden' ? 'Code admin incorrect.' : 'Erreur, réessaie.');
+      }
+    } catch { alert('Erreur réseau, réessaie.'); }
+  }
+
+  // ---------- Réservation d'un jeu ----------
+  const NOTE = 'style="background:rgba(255,211,106,.12);border-color:var(--accent);"';
+  function reserveAreaHTML(g) {
+    if (!currentUser) return `<p class="status" ${NOTE}>Connecte-toi avec Twitch pour pouvoir réserver un jeu.</p>`;
+    if (resOf(g).some((r) => r.by === currentUser)) return `<p class="status ok">🎁 Tu as déjà réservé ce jeu, joyeux Noël !</p>`;
+    if (credits < 1) return `<p class="status" ${NOTE}>Tu n'as pas (ou plus) de flocon ❄️ à dépenser.</p>`;
+    return `<p><button class="btn reserve-btn" id="reserveBtn" type="button">Je réserve ce jeu (${esc(currentUser)})</button></p>`;
+  }
+
+  function reservationsHTML(g) {
+    const list = resOf(g), n = nCopies(g), free = freeCopies(g);
+    let h = '';
+    if (n > 1) h += `<p class="status ok">🎁 ${free} clé${free > 1 ? 's' : ''} encore disponible${free > 1 ? 's' : ''} sur ${n}</p>`;
+    if (list.length) {
+      if (isAdmin()) {
+        h += '<ul class="resv">' + list.map((r) => `<li><b>${esc(r.by)}</b>${r.sent ? ' ✅ envoyé' : ''}
+          <button type="button" class="adm-btn" data-login="${esc(r.by)}" data-undo="${r.sent ? 1 : 0}">${r.sent ? '↩ annuler' : 'Marquer envoyé'}</button></li>`).join('') + '</ul>';
+      } else {
+        h += `<p class="status">Réservé par <strong>${list.map((r) => esc(r.by)).join(', ')}</strong>.</p>`;
+      }
+    }
+    if (free > 0) h += reserveAreaHTML(g);
+    return h;
+  }
+
+  async function reserveGame(appid) {
+    const rb = $('#reserveBtn');
+    if (rb) { rb.disabled = true; rb.textContent = 'Réservation en cours…'; }
+    const g = games.find((x) => x.appid === appid);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/reserve_game_noel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+        body: JSON.stringify({ p_appid: appid, p_login: currentUser, p_name: g?.name || null }),
+      });
+      const result = await res.json();
+      if (result === 'ok') {
+        (reservations[appid] ||= []).push({ by: currentUser, sent: false });
+        credits = Math.max(0, credits - 1);
+        renderAuth(); render(); openPanel(appid);
+      } else if (result === 'already_taken') {
+        await loadReservations(); render(); openPanel(appid);
+        alert('Trop tard, toutes les clés de ce jeu viennent d\'être réservées.');
+      } else if (result === 'already_yours') {
+        await loadReservations(); render(); openPanel(appid);
+        alert('Tu as déjà réservé ce jeu.');
+      } else if (result === 'no_credit') {
+        credits = 0; renderAuth(); openPanel(appid);
+        alert('Tu n\'as plus de flocon à dépenser pour le moment.');
+      } else if (result === 'no_stock') {
+        openPanel(appid);
+        alert('Ce jeu n\'est pas encore ouvert à la réservation, réessaie un peu plus tard.');
+      } else {
+        openPanel(appid);
+        alert('Une erreur est survenue, réessaie dans un instant.');
+      }
+    } catch {
+      if (rb) { rb.disabled = false; rb.textContent = `Je réserve ce jeu (${currentUser})`; }
+      alert('Une erreur est survenue, réessaie dans un instant.');
+    }
+  }
+
+  async function load() {
+    await handleTwitchRedirect();
+    if (!currentUser) currentUser = localStorage.getItem('twitchLogin');
+
+    try {
+      const data = await (await fetch('games.json', { cache: 'no-cache' })).json();
+      games = data.games || [];
+      if (data.updatedAt) $('#foot').textContent = 'Prix et évaluations Steam mis à jour le ' +
+        new Date(data.updatedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) + '.';
+    } catch {
+      grid.innerHTML = '<p class="empty">Impossible de charger games.json. Si tu ouvres le fichier directement depuis ton disque, lance plutôt un petit serveur local (ou passe par GitHub Pages).</p>';
+      return;
+    }
+    await loadReservations();
+    if (currentUser) await fetchCredits(currentUser);
+    renderAuth();
+
+    // Alimente la liste de suggestions avec tous les genres réellement présents
+    const allGenres = [...new Set(games.flatMap((g) => g.genres || []))].sort((a, b) => a.localeCompare(b, 'fr'));
+    $('#genreList').innerHTML = allGenres.map((g) => `<option value="${esc(g)}">`).join('');
+
+    render();
+  }
+  // ---------- Neige (désactivée si le visiteur préfère moins d'animations) ----------
+  (() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const c = document.getElementById('snow'), x = c.getContext('2d');
+    let W = 0, H = 0;
+    const size = () => { W = c.width = innerWidth; H = c.height = innerHeight; };
+    size(); addEventListener('resize', size);
+    const N = Math.min(90, Math.round(innerWidth / 18));
+    const flakes = Array.from({ length: N }, () => ({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: 1 + Math.random() * 2.6, s: .4 + Math.random() * 1.1, d: Math.random() * 6.28 }));
+    (function tick() {
+      x.clearRect(0, 0, W, H); x.fillStyle = 'rgba(255,255,255,.85)';
+      for (const f of flakes) {
+        f.y += f.s; f.d += .01; f.x += Math.sin(f.d) * .5;
+        if (f.y > H + 5) { f.y = -5; f.x = Math.random() * W; }
+        x.beginPath(); x.arc(f.x, f.y, f.r, 0, 6.2832); x.fill();
+      }
+      requestAnimationFrame(tick);
+    })();
+  })();
+
+  load();
+})();
+</script>
+</body>
+</html>
